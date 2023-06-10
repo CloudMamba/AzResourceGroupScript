@@ -1,0 +1,71 @@
+#!/bin/bash
+
+# A script to create an azure resource group
+
+setup() {
+    # install the az cli
+    curl -sl https://aka.ms/InstallAzureCliDeb | sudo bash
+
+    # login into azure from crossplatform website
+    az login --use-device-code
+    echo "You logged in to your azure account."
+}
+
+# print out 5 azure recommended regions for choosing
+choose_region() {
+    regions_array=($( az account list-locations --query "[?metadata.regionCategory=='Recommended'].{Name:name}" -o tsv | head -n 5))
+    for i in "${regions_array[@]}"
+    do 
+        echo "$1"
+     done
+}
+
+# select preferred region
+check_region() {
+    local region_exists=false
+    while [[ "$region_exists" = false ]]; do
+        print_out_regions
+        read -p "Enter your preferred region: " selected_region
+        for k in "$regions_array[@]}"
+        do
+            if [[ "$selected_region" == "$k" ]]; then
+                region_exists=true
+                echo "The region is valid"
+                break
+            else
+            continue
+        fi
+    done
+done
+}
+
+# check if rg already exists
+
+check_rg(){
+    while true; do
+        read -p "Enter name for resource group: "
+resource_group
+    if [ $(az group exists --name $resource_group) = true ]; then
+        echo "The group $resource_group  exists in $selected_region, please use another name"
+    else
+        break
+    fi
+done
+}
+
+#create the resource group
+create_rg(){
+    echo "creating the resource group: $resource_group in $selected_region"
+az group create -g $resource_group -l $selected_region | grep provisioningState
+}
+
+#list all resource groups
+list_rg(){
+    az group list -o table
+}
+
+#setup
+check_region
+check_rg
+create_rg
+list_rg
