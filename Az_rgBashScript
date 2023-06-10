@@ -8,7 +8,7 @@ setup() {
 
     # login into azure from crossplatform website
     az login --use-device-code
-    echo "You logged in to your azure account."
+    echo "You are logged in to your azure account."
 }
 
 # print out 5 azure recommended regions for choosing
