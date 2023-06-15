@@ -64,7 +64,7 @@ list_rg(){
     az group list -o table
 }
 
-#setup
+setup
 check_region
 check_rg
 create_rg
